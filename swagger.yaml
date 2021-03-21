@@ -1,0 +1,635 @@
+openapi: 3.0.0
+info:
+  description: Spring Data REST Demo
+  version: 1.0.0
+  title: Spring Data REST Demo
+servers:
+  - url: http://localhost:8080
+    description: Local
+paths:
+  /employees:
+    get:
+      summary: List employees
+      tags:
+        - employees
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _embedded
+                  - _links
+                  - page
+                properties:
+                  _embedded:
+                    type: object
+                    properties:
+                      employees:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Employee"
+                    required:
+                      - employees
+                  _links:
+                    $ref: "#/components/schemas/HateOasLinks"
+                  page:
+                    $ref: "#/components/schemas/Page"
+    post:
+      tags:
+        - employees
+      summary: Create employee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: "#/components/schemas/EmployeeEntity"
+              required:
+                - name
+                - email
+      responses:
+        201:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+  /employees/{id}:
+    get:
+      summary: Get employee
+      tags:
+        - employees
+      parameters:
+        - name: id
+          in: path
+          description: Employee ID
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+    patch:
+      summary: Update employee
+      tags:
+        - employees
+      parameters:
+        - name: id
+          in: path
+          description: Employee ID
+          required: true
+          schema:
+            type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: "#/components/schemas/EmployeeEntity"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+    delete:
+      summary: Delete employee
+      tags:
+        - employees
+      parameters:
+        - name: id
+          in: path
+          description: Employee ID
+          required: true
+          schema:
+            type: number
+      responses:
+        204:
+          description: Deleted
+  /employees/{id}/projects:
+    get:
+      summary: Get employee projects
+      tags:
+        - employees
+      parameters:
+        - name: id
+          in: path
+          description: Employee ID
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _embedded
+                  - _links
+                properties:
+                  _embedded:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Project"
+                  _links:
+                    $ref: "#/components/schemas/HateOasLinks"
+    post:
+      summary: Add project to employee
+      tags:
+        - employees
+      parameters:
+        - name: id
+          in: path
+          description: Employee ID
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: One or more URLs, one per line
+        content:
+          text/uri-list:
+            schema:
+              type: string
+            examples:
+              Single project:
+                value: 'http://localhost:8080/projects/1'
+              Multiple projects:
+                value: 'http://localhost:8080/projects/1
+
+                        http://localhost:8080/projects/2'
+      responses:
+        204:
+          description: OK
+    put:
+      summary: Override employee projects
+      tags:
+        - employees
+      parameters:
+        - name: id
+          in: path
+          description: Employee ID
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: One or more URLs, one per line
+        content:
+          text/uri-list:
+            schema:
+              type: string
+            examples:
+              Single project:
+                value: 'http://localhost:8080/projects/1'
+              Multiple projects:
+                value: 'http://localhost:8080/projects/1
+
+                        http://localhost:8080/projects/2'
+      responses:
+        204:
+          description: OK
+  /projects:
+    get:
+      summary: List projects
+      tags:
+        - projects
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _embedded
+                  - _links
+                  - page
+                properties:
+                  _embedded:
+                    type: object
+                    properties:
+                      projects:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Project"
+                    required:
+                      - projects
+                  _links:
+                    $ref: "#/components/schemas/HateOasLinks"
+                  page:
+                    $ref: "#/components/schemas/Page"
+    post:
+      summary: Create project
+      tags:
+        - projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: "#/components/schemas/ProjectEntity"
+              required:
+                - name
+      responses:
+        201:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+  /projects/{id}:
+    get:
+      summary: Get project
+      tags:
+        - projects
+      parameters:
+        - name: id
+          in: path
+          description: Project ID
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+    patch:
+      summary: Update project
+      tags:
+        - projects
+      parameters:
+        - name: id
+          in: path
+          description: Project ID
+          required: true
+          schema:
+            type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectEntity"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+    delete:
+      summary: Delete project
+      tags:
+        - projects
+      parameters:
+        - name: id
+          in: path
+          description: Project ID
+          required: true
+          schema:
+            type: number
+      responses:
+        204:
+          description: Deleted
+  /projects/{id}/employees:
+    get:
+      summary: Get project employees
+      tags:
+        - projects
+      parameters:
+        - name: id
+          in: path
+          description: Project ID
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _embedded
+                  - _links
+                properties:
+                  _embedded:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Employee"
+                  _links:
+                    $ref: "#/components/schemas/HateOasLinks"
+    post:
+      summary: Add employee to project
+      tags:
+        - projects
+      parameters:
+        - name: id
+          in: path
+          description: Project ID
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: One or more URLs, one per line
+        content:
+          text/uri-list:
+            schema:
+              type: string
+            examples:
+              Single project:
+                value: 'http://localhost:8080/employees/1'
+              Multiple projects:
+                value: 'http://localhost:8080/employees/1
+
+                          http://localhost:8080/employees/2'
+      responses:
+        204:
+          description: OK
+    put:
+      summary: Override project employees
+      tags:
+        - projects
+      parameters:
+        - name: id
+          in: path
+          description: Project ID
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: One or more URLs, one per line
+        content:
+          text/uri-list:
+            schema:
+              type: string
+            examples:
+              Single project:
+                value: 'http://localhost:8080/employees/1'
+              Multiple projects:
+                value: 'http://localhost:8080/employees/1
+
+                          http://localhost:8080/employees/2'
+      responses:
+        204:
+          description: OK
+  /time:
+    get:
+      summary: List time tracking entries
+      tags:
+        - time
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _embedded
+                  - _links
+                  - page
+                properties:
+                  _embedded:
+                    type: object
+                    properties:
+                      times:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/WorkTime"
+                    required:
+                      - times
+                  _links:
+                    $ref: "#/components/schemas/HateOasLinks"
+                  page:
+                    $ref: "#/components/schemas/Page"
+    post:
+      tags:
+        - time
+      summary: Create time tracking entry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: "#/components/schemas/WorkTimeEntity"
+              required:
+                - start
+                - end
+                - project
+                - employee
+      responses:
+        201:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkTime"
+  /time/{id}:
+    get:
+      summary: Get time tracking entity
+      tags:
+        - time
+      parameters:
+        - name: id
+          in: path
+          description: WorkTime ID
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkTime"
+    patch:
+      summary: Update time tracking entry
+      tags:
+        - time
+      parameters:
+        - name: id
+          in: path
+          description: WorkTime ID
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: "#/components/schemas/WorkTimeEntity"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+    delete:
+      summary: Delete employee
+      tags:
+        - employees
+      parameters:
+        - name: id
+          in: path
+          description: Employee ID
+          required: true
+          schema:
+            type: number
+      responses:
+        204:
+          description: Deleted
+components:
+  schemas:
+    Employee:
+      type: object
+      required:
+        - name
+        - email
+        - _links
+      properties:
+        name:
+          type: string
+          example: Alice Doe
+        email:
+          type: string
+          format: email
+          example: alice.doe@example.com
+        _links:
+          $ref: "#/components/schemas/HateOasLinks"
+    Project:
+      type: object
+      required:
+        - name
+        - _links
+      properties:
+        name:
+          type: string
+          example: "embrace"
+        slogan:
+          type: string
+          example: "envisioneer revolutionary mindshare"
+        description:
+          type: string
+          example: "The CSS firewall is down, navigate the wireless circuit so we can bypass teh PNG capacitor!"
+        _links:
+          $ref: "#/components/schemas/HateOasLinks"
+    WorkTime:
+      type: object
+      required:
+        - start
+        - end
+        - _links
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        _links:
+          $ref: "#/components/schemas/HateOasLinks"
+    HateOasLinks:
+      type: object
+      required:
+        - self
+      properties:
+        self:
+          $ref: "#/components/schemas/HateOasLink"
+      additionalProperties:
+        $ref: "#/components/schemas/HateOasLink"
+    HateOasLink:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          format: uri
+          example: "http://localhost:8080/employees/1"
+    Page:
+      type: object
+      required:
+        - size
+        - totalElements
+        - totalPages
+        - number
+      properties:
+        size:
+          type: number
+          example: 10
+        totalElements:
+          type: number
+          example: 123
+        totalPages:
+          type: number
+          example: 13
+        number:
+          type: number
+          example: 0
+    WorkTimeEntity:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        employee:
+          type: string
+          format: uri
+          example: "http://localhost:8080/employees/1"
+        project:
+          type: string
+          format: uri
+          example: "http://localhost:8080/projects/1"
+    ProjectEntity:
+      type: object
+      properties:
+        name:
+          type: string
+        slogan:
+          type: string
+        description:
+          type: string
+    EmployeeEntity:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+tags:
+  - name: employees
+    description: Employee operations
+  - name: projects
+    description: Project operations
+  - name: time
+    description: Time tracking
